@@ -523,17 +523,35 @@
 <!-- UPLOAD -->
 <div id="page-upload" class="page">
   <div class="page-title">上傳題庫</div>
-  <div class="page-subtitle">上傳 JSON 格式題庫匯入考古題</div>
+  <div class="page-subtitle">上傳 JSON 格式題庫</div>
 
+  <!-- 歷屆考古題上傳 -->
+  <div class="section-label">📚 歷屆考古題</div>
   <div class="upload-zone" onclick="document.getElementById('jsonInput').click()"
        ondragover="event.preventDefault()"
        ondrop="handleJsonDrop(event)">
     <div class="upload-icon">📁</div>
     <div class="upload-title">點擊或拖曳上傳 JSON 題庫</div>
-    <div class="upload-hint">支援 .json 格式</div>
+    <div class="upload-hint">上傳後會加入「歷屆考古題」區域</div>
     <button class="btn-primary" style="margin-top:8px">選擇 JSON 檔案</button>
   </div>
   <input type="file" id="jsonInput" accept=".json" style="display:none" onchange="handleJsonUpload(this)">
+
+  <div class="divider"></div>
+
+  <!-- 練習區上傳 -->
+  <div class="section-label">✏️ 練習區題庫</div>
+  <div class="upload-zone" onclick="document.getElementById('practiceJsonInput').click()"
+       ondragover="event.preventDefault()"
+       ondrop="handlePracticeJsonDrop(event)">
+    <div class="upload-icon">📝</div>
+    <div class="upload-title">點擊或拖曳上傳練習題庫</div>
+    <div class="upload-hint">上傳後會加入「練習區」，成績獨立統計</div>
+    <button class="btn-primary" style="margin-top:8px">選擇 JSON 檔案</button>
+  </div>
+  <input type="file" id="practiceJsonInput" accept=".json" style="display:none" onchange="handlePracticeJsonUpload(this)">
+
+  <div class="divider"></div>
 
   <div class="json-format">
     <h4>📋 JSON 格式範例</h4>
@@ -850,6 +868,33 @@ function handleJsonDrop(e) {
   r.readAsText(f);
 }
 
+// 練習區上傳
+function handlePracticeJsonUpload(input) {
+  const f = input.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = e=>{try{importPracticeQs(JSON.parse(e.target.result));}catch{toast('JSON 格式錯誤');}};
+  r.readAsText(f);
+}
+function handlePracticeJsonDrop(e) {
+  e.preventDefault();
+  const f = e.dataTransfer.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ev=>{try{importPracticeQs(JSON.parse(ev.target.result));}catch{toast('JSON 格式錯誤');}};
+  r.readAsText(f);
+}
+
+function importPracticeQs(data) {
+  if(!Array.isArray(data)){toast('格式錯誤：需要陣列');return;}
+  const valid = data.filter(q=>q.question&&q.options&&q.answer!==undefined);
+  valid.forEach((q,i)=>{if(!q.id) q.id='pq_'+Date.now()+'_'+i;});
+  const existing = new Set(P.questions.map(q=>q.id));
+  const newOnes = valid.filter(q=>!existing.has(q.id));
+  P.questions = [...P.questions,...newOnes];
+  localStorage.setItem('practiceQuestions',JSON.stringify(P.questions));
+  toast(`✓ 練習區成功匯入 ${newOnes.length} 題！`);
+  renderSummary(); renderHome();
+}
+
 function importQs(data) {
   if(!Array.isArray(data)){toast('格式錯誤：需要陣列');return;}
   const valid = data.filter(q=>q.question&&q.options&&q.answer!==undefined);
@@ -865,26 +910,55 @@ function importQs(data) {
 function renderSummary() {
   const el = document.getElementById('loadedSummary');
   if(!el) return;
+  
+  let html = '';
+  
+  // 歷屆考古題
+  html += '<div style="font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:10px">📚 歷屆考古題</div>';
   if(!S.questions.length){
-    el.innerHTML='<div class="empty-state" style="padding:24px"><div class="empty-icon">📭</div><div>尚未上傳任何題庫</div></div>';
-    return;
-  }
-  const subjects = [...new Set(S.questions.map(q=>q.subject))];
-  el.innerHTML = subjects.map(s=>{
-    const qs = S.questions.filter(q=>q.subject===s);
-    const icon = SUBJECTS.find(x=>x.name===s)?.icon||'📋';
-    const chapters = [...new Set(qs.map(q=>q.chapter).filter(Boolean))];
-    return `<div class="subj-stat-row" style="margin-bottom:8px">
-      <div class="subj-stat-name">${icon} ${s}</div>
-      <div style="flex:1;font-size:12px;color:var(--ink3)">${chapters.slice(0,3).join('、')}${chapters.length>3?'…':''}</div>
-      <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);font-weight:600;min-width:44px;text-align:right">${qs.length} 題</div>
-      <button class="btn-secondary" style="padding:4px 12px;font-size:12px;margin-left:8px" onclick="clearSubj('${s}')">清除</button>
+    html += '<div style="padding:16px;text-align:center;color:var(--ink3);font-size:13px;background:var(--surface);border-radius:var(--radius);margin-bottom:16px">尚未上傳</div>';
+  } else {
+    const subjects = [...new Set(S.questions.map(q=>q.subject))];
+    html += subjects.map(s=>{
+      const qs = S.questions.filter(q=>q.subject===s);
+      const icon = SUBJECTS.find(x=>x.name===s)?.icon||'📋';
+      const chapters = [...new Set(qs.map(q=>q.chapter).filter(Boolean))];
+      return `<div class="subj-stat-row" style="margin-bottom:8px">
+        <div class="subj-stat-name">${icon} ${s}</div>
+        <div style="flex:1;font-size:12px;color:var(--ink3)">${chapters.slice(0,2).join('、')}${chapters.length>2?'…':''}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);font-weight:600;min-width:44px;text-align:right">${qs.length} 題</div>
+        <button class="btn-secondary" style="padding:4px 12px;font-size:12px;margin-left:8px" onclick="clearSubj('${s}')">清除</button>
+      </div>`;
+    }).join('');
+    html += `<div style="margin-top:8px;padding:8px 0;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;color:var(--ink3)">共 <strong>${S.questions.length}</strong> 題</span>
+      <button class="btn-secondary" style="padding:4px 12px;font-size:12px;color:var(--red);border-color:var(--red)" onclick="clearAll()">清除全部</button>
     </div>`;
-  }).join('') +
-  `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-    <span style="font-size:13px;color:var(--ink3)">共 <strong>${S.questions.length}</strong> 題</span>
-    <button class="btn-secondary" style="color:var(--red);border-color:var(--red)" onclick="clearAll()">清除全部</button>
-  </div>`;
+  }
+  
+  // 練習區題庫
+  html += '<div style="font-size:13px;font-weight:600;color:var(--ink2);margin:20px 0 10px">✏️ 練習區題庫</div>';
+  if(!P.questions.length){
+    html += '<div style="padding:16px;text-align:center;color:var(--ink3);font-size:13px;background:var(--surface);border-radius:var(--radius)">尚未上傳</div>';
+  } else {
+    const pSubjects = [...new Set(P.questions.map(q=>q.subject))];
+    html += pSubjects.map(s=>{
+      const qs = P.questions.filter(q=>q.subject===s);
+      const chapters = [...new Set(qs.map(q=>q.chapter).filter(Boolean))];
+      return `<div class="subj-stat-row" style="margin-bottom:8px">
+        <div class="subj-stat-name">📝 ${s}</div>
+        <div style="flex:1;font-size:12px;color:var(--ink3)">${chapters.slice(0,2).join('、')}${chapters.length>2?'…':''}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--blue);font-weight:600;min-width:44px;text-align:right">${qs.length} 題</div>
+        <button class="btn-secondary" style="padding:4px 12px;font-size:12px;margin-left:8px" onclick="clearPracticeSubj('${s}')">清除</button>
+      </div>`;
+    }).join('');
+    html += `<div style="margin-top:8px;padding:8px 0;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;color:var(--ink3)">共 <strong>${P.questions.length}</strong> 題</span>
+      <button class="btn-secondary" style="padding:4px 12px;font-size:12px;color:var(--red);border-color:var(--red)" onclick="clearAllPractice()">清除全部</button>
+    </div>`;
+  }
+  
+  el.innerHTML = html;
 }
 
 function clearSubj(name) {
@@ -894,10 +968,23 @@ function clearSubj(name) {
 }
 
 function clearAll() {
-  if(!confirm('確定清除所有題庫？')) return;
+  if(!confirm('確定清除所有考古題題庫？')) return;
   S.questions=[];
   localStorage.setItem('questions','[]');
-  renderSummary(); renderHome(); toast('已清除所有題庫');
+  renderSummary(); renderHome(); toast('已清除所有考古題題庫');
+}
+
+function clearPracticeSubj(name) {
+  P.questions = P.questions.filter(q=>q.subject!==name);
+  localStorage.setItem('practiceQuestions',JSON.stringify(P.questions));
+  renderSummary(); renderHome(); toast(`已清除練習區「${name}」`);
+}
+
+function clearAllPractice() {
+  if(!confirm('確定清除所有練習區題庫？')) return;
+  P.questions=[];
+  localStorage.setItem('practiceQuestions','[]');
+  renderSummary(); renderHome(); toast('已清除所有練習區題庫');
 }
 
 // ===== HOME RENDER =====
