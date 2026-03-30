@@ -139,7 +139,8 @@
   }
   .mode-btn:hover { border-color:var(--ink3); color:var(--ink2); }
   .mode-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
-  .start-section { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  .start-section { display:flex; flex-direction:column; gap:12px; }
+  .start-section .btn-primary, .start-section .btn-secondary { width:100%; text-align:center; }
 
   /* 練習區卡片 - 藍色系 */
   .practice-card { 
@@ -427,8 +428,6 @@
     .stat-card-v { font-size:26px; }
     .q-text { font-size:16px; margin-bottom:22px; }
     .opt-btn { padding:14px 16px; font-size:14px; }
-    .start-section { flex-direction:column; }
-    .start-section .btn-primary, .start-section .btn-secondary { width:100%; text-align:center; }
     .mode-selector { flex-wrap:wrap; }
     .mode-btn { padding:8px 14px; font-size:12px; }
     .quiz-meta { font-size:11px; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -505,7 +504,7 @@
 
   <!-- 練習區 -->
   <div class="section-label">✏️ 練習區</div>
-  <div style="background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:0 1px 8px var(--shadow)">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px">
     <div style="font-size:13px;color:var(--ink3);margin-bottom:14px;line-height:1.7">
       上傳自訂練習題庫，成績與考古題<strong style="color:var(--ink2)">完全獨立</strong>統計，不互相影響。
     </div>
@@ -515,7 +514,7 @@
       <button class="mode-btn" data-mode="random" onclick="selectPracticeMode(this)">隨機練習</button>
       <button class="mode-btn" data-mode="wrong" onclick="selectPracticeMode(this)">錯題複習</button>
     </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div class="start-section">
       <button class="btn-primary" onclick="startPracticeQuiz()">開始練習 →</button>
     </div>
   </div>
