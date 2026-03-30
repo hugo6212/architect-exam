@@ -5,444 +5,299 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0f1118">
+<meta name="theme-color" content="#1a1510">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>建築師考試刷題系統</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
 
   :root {
-    /* 深色背景 - 類似圖片的深藍黑色 */
-    --bg: #0f1118; --bg2: #161a24; --bg3: #1e232e;
-    --surface: #1a1f2b; --surface2: #232937; --surface3: #2c3344;
-    /* 文字顏色 */
-    --ink: #f0f0f2; --ink2: #a8aab3; --ink3: #6b6e7a;
-    /* Claude 橘色系 */
-    --accent: #da7756; --accent2: #e8956e; --accent-dim: rgba(218,119,86,0.12);
-    --accent-glow: rgba(218,119,86,0.25);
-    /* 輔助色 */
-    --green: #4ade80; --red: #f87171; --blue: #60a5fa; --purple: #a78bfa;
-    --teal: #2dd4bf;
-    /* 邊框與陰影 */
-    --border: #2a303d; --border2: #363d4d;
-    --shadow: rgba(0,0,0,0.5);
-    --radius: 12px; --radius-lg: 20px; --radius-full: 9999px;
+    --bg: #f5f0e8; --bg2: #ede6d6; --bg3: #e0d8c4;
+    --ink: #1a1510; --ink2: #3d3328; --ink3: #6b5f4e;
+    --accent: #c8401a; --accent2: #e8620d;
+    --gold: #b8942a; --gold2: #d4aa3a;
+    --green: #2a6b3c; --red: #b82a2a;
+    --border: #c8b89a; --shadow: rgba(26,21,16,0.12);
+    --radius: 4px;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Inter','Noto Sans TC',system-ui,sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; -webkit-font-smoothing:antialiased; }
+  body { font-family:'Noto Sans TC',sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; }
 
-  /* HEADER - 簡潔風格 */
-  .header { 
-    background: var(--bg); color:var(--ink); padding:0 24px; 
-    display:flex; align-items:center; justify-content:space-between; 
-    height:60px; border-bottom:1px solid var(--border); 
-    position:sticky; top:0; z-index:100;
-  }
-  .header-logo { font-weight:600; font-size:18px; letter-spacing:-0.02em; display:flex; align-items:center; gap:10px; }
-  .header-logo::before { content:''; width:28px; height:28px; background:var(--accent); border-radius:8px; }
-  .header-logo span { color:var(--accent); }
+  .header { background:var(--ink); color:var(--bg); padding:0 32px; display:flex; align-items:center; justify-content:space-between; height:60px; border-bottom:3px solid var(--accent); position:sticky; top:0; z-index:100; box-shadow:0 2px 20px var(--shadow); }
+  .header-logo { font-family:'Noto Serif TC',serif; font-weight:900; font-size:18px; letter-spacing:0.1em; }
+  .header-logo span { color:var(--gold2); }
   .header-nav { display:flex; gap:4px; }
-  .nav-btn { 
-    background:transparent; border:none; color:var(--ink3); 
-    padding:8px 14px; border-radius:var(--radius); cursor:pointer; 
-    font-size:13px; font-family:inherit; font-weight:500; transition:all 0.2s;
-  }
-  .nav-btn:hover { color:var(--ink); background:var(--surface); }
-  .nav-btn.active { background:var(--accent); color:#fff; }
+  .nav-btn { background:transparent; border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.7); padding:6px 14px; border-radius:var(--radius); cursor:pointer; font-size:13px; font-family:inherit; transition:all 0.2s; }
+  .nav-btn:hover,.nav-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
 
-  /* 手機底部導航 - 圓潤風格 */
-  .mobile-nav { 
-    display:none; position:fixed; bottom:0; left:0; right:0; 
-    background: var(--bg2); border-top:1px solid var(--border); 
-    z-index:200; padding:8px 12px; padding-bottom:calc(8px + env(safe-area-inset-bottom));
-  }
-  .mobile-nav-inner { display:flex; background:var(--surface); border-radius:16px; padding:4px; }
-  .mobile-nav-btn { 
-    flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; 
-    padding:10px 4px 8px; border:none; background:transparent; color:var(--ink3); 
-    cursor:pointer; font-family:inherit; font-size:10px; font-weight:500;
-    transition:all 0.2s; -webkit-tap-highlight-color:transparent; border-radius:12px;
-  }
+  /* 手機底部導航 */
+  .mobile-nav { display:none; position:fixed; bottom:0; left:0; right:0; background:var(--ink); border-top:2px solid var(--accent); z-index:200; padding-bottom:env(safe-area-inset-bottom); }
+  .mobile-nav-inner { display:flex; }
+  .mobile-nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 4px 8px; border:none; background:transparent; color:rgba(255,255,255,0.5); cursor:pointer; font-family:inherit; font-size:10px; letter-spacing:0.03em; transition:all 0.15s; -webkit-tap-highlight-color:transparent; }
   .mobile-nav-btn .mnav-icon { font-size:20px; line-height:1; }
-  .mobile-nav-btn.active { color:var(--accent); background:var(--accent-dim); }
+  .mobile-nav-btn.active { color:var(--gold2); }
+  .mobile-nav-btn.active .mnav-icon { transform:scale(1.1); }
 
-  /* PAGE */
-  .page { display:none; padding:32px 24px; max-width:960px; margin:0 auto; }
-  .page.active { display:block; animation: fadeIn 0.25s ease; }
-  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-  
-  .page-title { font-size:28px; font-weight:700; margin-bottom:6px; letter-spacing:-0.02em; color:var(--ink); }
-  .page-subtitle { font-size:14px; color:var(--ink3); margin-bottom:28px; font-weight:400; }
-  .section-label { 
-    font-size:12px; font-weight:600; color:var(--ink3); letter-spacing:0.05em; 
-    text-transform:uppercase; margin-bottom:14px;
-  }
-  .divider { height:1px; background:var(--border); margin:28px 0; }
+  .page { display:none; padding:32px; max-width:960px; margin:0 auto; }
+  .page.active { display:block; }
+  .page-title { font-family:'Noto Serif TC',serif; font-size:28px; font-weight:900; margin-bottom:6px; letter-spacing:0.05em; }
+  .page-subtitle { font-size:13px; color:var(--ink3); margin-bottom:28px; }
+  .section-label { font-size:11px; font-weight:700; color:var(--ink3); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:14px; }
+  .divider { height:1px; background:var(--border); margin:24px 0; }
 
-  /* BUTTONS - 圓潤漸層風格 */
-  .btn-primary { 
-    background: linear-gradient(135deg, var(--accent) 0%, #c96a4a 100%);
-    color:#fff; border:none; padding:14px 28px; border-radius:var(--radius); 
-    cursor:pointer; font-size:15px; font-family:inherit; font-weight:600; 
-    transition:all 0.25s; 
-    box-shadow: 0 4px 15px var(--accent-glow);
-    -webkit-tap-highlight-color:transparent;
-  }
-  .btn-primary:hover { transform:translateY(-2px); box-shadow: 0 8px 25px var(--accent-glow); filter:brightness(1.05); }
-  .btn-primary:active { transform:translateY(0); }
-  .btn-primary:disabled { background:var(--surface2); box-shadow:none; transform:none; cursor:not-allowed; color:var(--ink3); }
-  
-  .btn-secondary { 
-    background:var(--surface); color:var(--ink2); border:1px solid var(--border); 
-    padding:12px 22px; border-radius:var(--radius); cursor:pointer; 
-    font-size:14px; font-family:inherit; font-weight:500; transition:all 0.2s;
-  }
-  .btn-secondary:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
+  .btn-primary { background:var(--accent); color:#fff; border:none; padding:12px 28px; border-radius:var(--radius); cursor:pointer; font-size:15px; font-family:'Noto Serif TC',serif; font-weight:700; letter-spacing:0.1em; transition:all 0.2s; box-shadow:0 2px 8px rgba(200,64,26,0.3); -webkit-tap-highlight-color:transparent; }
+  .btn-primary:hover { background:var(--accent2); transform:translateY(-1px); }
+  .btn-primary:disabled { background:#bbb; box-shadow:none; transform:none; cursor:not-allowed; }
+  .btn-secondary { background:transparent; color:var(--ink2); border:2px solid var(--border); padding:10px 24px; border-radius:var(--radius); cursor:pointer; font-size:14px; font-family:inherit; transition:all 0.2s; }
+  .btn-secondary:hover { border-color:var(--ink2); background:var(--bg2); }
 
-  /* HOME - 科目卡片 - 深色圓潤風格 */
-  .subject-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-bottom:24px; }
-  .subject-card { 
-    background: var(--surface); 
-    border:1px solid var(--border); border-radius:var(--radius-lg); 
-    padding:20px; cursor:pointer; transition:all 0.25s; 
-    position:relative; overflow:hidden;
-  }
-  .subject-card:hover, .subject-card.selected { 
-    border-color:var(--accent); 
-    background: linear-gradient(145deg, var(--surface) 0%, var(--surface2) 100%);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.3), 0 0 0 1px var(--accent-dim);
-    transform:translateY(-2px);
-  }
-  .subject-icon { font-size:28px; margin-bottom:10px; }
-  .subject-name { font-size:15px; font-weight:600; margin-bottom:4px; color:var(--ink); }
-  .subject-count { font-size:12px; color:var(--ink3); font-family:'DM Mono',monospace; }
-  .subject-progress { margin-top:12px; height:4px; background:var(--bg3); border-radius:var(--radius-full); overflow:hidden; }
-  .subject-progress-fill { height:100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius:var(--radius-full); transition:width 0.5s ease-out; }
-  .subject-pct { font-family:'DM Mono',monospace; font-size:12px; color:var(--accent); margin-top:6px; }
-  
-  /* 未完成標籤 */
-  .subject-card.has-resume { border-color:var(--accent); }
-  .resume-badge { 
-    display:none; position:absolute; top:12px; right:12px; 
-    background: var(--accent); color:#fff; font-size:10px; 
-    padding:4px 10px; border-radius:var(--radius-full); font-weight:600;
-  }
-  .subject-card.has-resume .resume-badge { display:block; }
-
-  /* 模式選擇器 - 圓角藥丸風格 */
+  /* HOME */
+  .subject-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-bottom:24px; }
+  .subject-card { background:#fff; border:2px solid var(--border); border-radius:var(--radius); padding:20px 24px; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; }
+  .subject-card::before { content:''; position:absolute; top:0; left:0; width:4px; height:100%; background:var(--accent); opacity:0; transition:opacity 0.2s; }
+  .subject-card:hover,.subject-card.selected { border-color:var(--accent); background:#fff8f5; }
+  .subject-card:hover::before,.subject-card.selected::before { opacity:1; }
+  .subject-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px var(--shadow); }
+  .subject-icon { font-size:28px; margin-bottom:8px; }
+  .subject-name { font-family:'Noto Serif TC',serif; font-size:16px; font-weight:700; margin-bottom:4px; }
+  .subject-count { font-size:12px; color:var(--ink3); }
+  .subject-progress { margin-top:10px; height:4px; background:var(--bg3); border-radius:2px; overflow:hidden; }
+  .subject-progress-fill { height:100%; background:var(--accent); border-radius:2px; transition:width 0.5s; }
   .mode-selector { display:flex; gap:8px; margin-bottom:20px; }
-  .mode-btn { 
-    padding:10px 18px; border:1px solid var(--border); border-radius:var(--radius-full); 
-    cursor:pointer; font-size:13px; background:var(--surface); color:var(--ink3); 
-    font-family:inherit; font-weight:500; transition:all 0.2s;
-  }
-  .mode-btn:hover { border-color:var(--ink3); color:var(--ink2); }
-  .mode-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
-  .start-section { display:flex; flex-direction:column; gap:12px; }
-  .start-section .btn-primary, .start-section .btn-secondary { width:100%; text-align:center; }
+  .mode-btn { padding:8px 18px; border:2px solid var(--border); border-radius:20px; cursor:pointer; font-size:13px; background:transparent; color:var(--ink2); font-family:inherit; transition:all 0.2s; }
+  .mode-btn.active { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .start-section { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
 
-  /* 練習區卡片 - 藍色系 */
-  .practice-card { 
-    background: var(--surface); border:1px solid var(--border); 
-    border-radius:var(--radius); padding:16px; cursor:pointer; 
-    transition:all 0.2s; position:relative; overflow:hidden;
-  }
-  .practice-card:hover, .practice-card.selected { 
-    border-color:var(--blue); background:rgba(96,165,250,0.08);
-    transform:translateY(-2px);
-  }
-  .practice-subject-name { font-size:14px; font-weight:600; margin-bottom:3px; color:var(--ink); }
-  .practice-subject-count { font-size:11px; color:var(--ink3); font-family:'DM Mono',monospace; }
-  .practice-progress { margin-top:8px; height:3px; background:var(--bg3); border-radius:var(--radius-full); overflow:hidden; }
-  .practice-progress-fill { height:100%; background: linear-gradient(90deg, var(--blue), var(--purple)); border-radius:var(--radius-full); transition:width 0.4s; }
-  .practice-card.has-resume { border-color:var(--accent) !important; background:var(--accent-dim) !important; }
-  .practice-card .resume-badge { display:none; position:absolute; top:8px; right:8px; background:var(--accent); color:#fff; font-size:9px; padding:3px 8px; border-radius:var(--radius-full); font-weight:600; }
-  .practice-card.has-resume .resume-badge { display:block; }
-
-  /* 上傳區 */
-  .upload-tabs { display:flex; background:var(--surface); border-radius:var(--radius); overflow:hidden; margin-bottom:24px; padding:4px; }
-  .upload-tab { 
-    flex:1; padding:12px; text-align:center; cursor:pointer; font-size:13px; 
-    font-family:inherit; background:transparent; border:none; color:var(--ink3); 
-    transition:all 0.2s; font-weight:500; border-radius:8px;
-  }
-  .upload-tab:hover { color:var(--ink2); }
-  .upload-tab.active { background:var(--accent); color:#fff; }
+  /* UPLOAD TABS */
+  .upload-tabs { display:flex; border:2px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:24px; }
+  .upload-tab { flex:1; padding:13px; text-align:center; cursor:pointer; font-size:14px; font-family:inherit; background:transparent; border:none; color:var(--ink3); transition:all 0.2s; font-weight:600; }
+  .upload-tab.active { background:var(--ink); color:#fff; }
   .upload-tab-panel { display:none; }
   .upload-tab-panel.active { display:block; }
-  
-  .upload-zone { 
-    border:2px dashed var(--border); border-radius:var(--radius-lg); 
-    padding:48px 24px; text-align:center; cursor:pointer; 
-    transition:all 0.25s; margin-bottom:20px; background:var(--surface);
-  }
-  .upload-zone:hover, .upload-zone.dragover { 
-    border-color:var(--accent); background:var(--accent-dim);
-  }
-  .upload-icon { font-size:40px; margin-bottom:14px; }
-  .upload-title { font-size:16px; font-weight:600; margin-bottom:6px; color:var(--ink); }
+
+  .upload-zone { border:2px dashed var(--border); border-radius:var(--radius); padding:40px; text-align:center; cursor:pointer; transition:all 0.2s; margin-bottom:20px; }
+  .upload-zone:hover,.upload-zone.dragover { border-color:var(--accent); background:#fff8f5; }
+  .upload-icon { font-size:40px; margin-bottom:12px; }
+  .upload-title { font-size:16px; font-weight:600; margin-bottom:6px; }
   .upload-hint { font-size:13px; color:var(--ink3); margin-bottom:16px; }
 
-  /* JSON 格式說明 */
-  .json-format { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-top:18px; }
-  .json-format h4 { font-size:13px; font-weight:600; margin-bottom:10px; color:var(--accent); }
-  .json-format pre { 
-    font-family:'DM Mono',monospace; font-size:11px; color:var(--ink2); 
-    line-height:1.7; white-space:pre-wrap; background:var(--bg2); 
-    padding:14px; border-radius:8px;
-  }
+  /* AI PARSE BOX */
+  .ai-box { background:#fff; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:20px; box-shadow:0 1px 8px var(--shadow); }
+  .ai-box-head { background:var(--ink); color:#fff; padding:14px 20px; display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; }
+  .ai-badge { background:var(--gold2); color:var(--ink); padding:2px 8px; border-radius:10px; font-size:11px; font-weight:700; }
+  .ai-box-body { padding:20px; }
 
-  /* 年份選擇 */
-  .year-chips { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
-  .year-chip { 
-    padding:5px 12px; border:1px solid var(--border); border-radius:var(--radius-full); 
-    font-size:11px; font-family:'DM Mono',monospace; cursor:pointer; 
-    background:var(--surface); color:var(--ink3); transition:all 0.15s;
-  }
-  .year-chip:hover { border-color:var(--accent); color:var(--accent); }
-  .year-chip.active { background:var(--accent); border-color:var(--accent); color:#fff; }
-
-  /* QUIZ 答題頁面 */
-  .quiz-header { 
-    display:flex; justify-content:space-between; align-items:center; 
-    margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--border);
-  }
-  .quiz-meta { font-size:13px; color:var(--ink3); font-weight:500; }
-  .quiz-prog { flex:1; height:6px; background:var(--bg3); border-radius:var(--radius-full); margin:0 20px; overflow:hidden; }
-  .quiz-prog-fill { 
-    height:100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); 
-    border-radius:var(--radius-full); transition:width 0.4s ease-out;
-  }
-  .quiz-counter { font-family:'DM Mono',monospace; font-size:14px; color:var(--accent); min-width:60px; text-align:right; font-weight:500; }
-  
-  .q-tag { 
-    display:inline-block; background:var(--surface); border:1px solid var(--border); 
-    border-radius:8px; padding:6px 12px; font-size:11px; font-family:'DM Mono',monospace; 
-    color:var(--ink3); margin-bottom:16px;
-  }
-  .q-text { font-size:18px; line-height:1.85; margin-bottom:28px; font-weight:400; color:var(--ink); }
-  
-  /* 選項按鈕 - 圓潤風格 */
-  .opts { display:flex; flex-direction:column; gap:10px; margin-bottom:28px; }
-  .opt-btn { 
-    display:flex; align-items:flex-start; gap:14px; padding:16px 18px; 
-    border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; 
-    transition:all 0.2s; background:var(--surface); text-align:left; 
-    font-family:inherit; font-size:15px; line-height:1.65; color:var(--ink);
-    -webkit-tap-highlight-color:transparent;
-  }
-  .opt-btn:hover:not(:disabled) { border-color:var(--accent); background:var(--accent-dim); }
-  .opt-lbl { 
-    font-family:'DM Mono',monospace; font-size:13px; font-weight:600; 
-    color:var(--ink3); min-width:22px; margin-top:1px;
-    width:26px; height:26px; display:flex; align-items:center; justify-content:center;
-    background:var(--bg3); border-radius:8px;
-  }
-  .opt-btn.correct { border-color:var(--green); background:rgba(74,222,128,0.1); }
-  .opt-btn.correct .opt-lbl { color:var(--green); background:rgba(74,222,128,0.15); }
-  .opt-btn.wrong { border-color:var(--red); background:rgba(248,113,113,0.1); }
-  .opt-btn.wrong .opt-lbl { color:var(--red); background:rgba(248,113,113,0.15); }
-  .opt-btn:disabled { cursor:default; }
-
-  /* 解析區塊 */
-  .explain-box { 
-    background:var(--surface); border-left:3px solid var(--accent); 
-    border-radius:0 var(--radius) var(--radius) 0; padding:18px 20px; 
-    margin-bottom:24px; display:none;
-  }
-  .explain-box.show { display:block; animation: slideIn 0.25s ease; }
-  @keyframes slideIn { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:translateX(0); } }
-  .explain-title { font-size:12px; font-weight:700; color:var(--accent); margin-bottom:10px; letter-spacing:0.05em; }
-  .explain-text { font-size:14px; line-height:1.85; color:var(--ink2); }
-
-  .quiz-actions { display:flex; gap:12px; justify-content:space-between; align-items:center; }
-  .bk-btn { 
-    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); 
-    padding:10px 14px; cursor:pointer; font-size:18px; transition:all 0.2s; color:var(--ink3);
-  }
-  .bk-btn:hover, .bk-btn.active { border-color:var(--accent); color:var(--accent); }
-  .bk-btn.active { background:var(--accent-dim); }
-
-  /* 結果頁面 - 圓環圖 */
-  .result-ring { width:160px; height:160px; margin:0 auto 28px; position:relative; }
-  .result-ring svg { width:100%; height:100%; transform:rotate(-90deg); }
-  .result-ring circle { transition: stroke-dashoffset 1s ease-out; }
-  .result-ring-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
-  .result-pct { font-family:'DM Mono',monospace; font-size:38px; font-weight:600; color:var(--accent); line-height:1; }
-  .result-lbl { font-size:12px; color:var(--ink3); margin-top:4px; font-weight:500; }
-  
-  .result-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:24px 0; }
-  .r-stat { 
-    text-align:center; padding:18px 12px; background:var(--surface); 
-    border-radius:var(--radius); border:1px solid var(--border);
-  }
-  .r-stat-n { font-family:'DM Mono',monospace; font-size:28px; font-weight:600; color:var(--ink); }
-  .r-stat-l { font-size:11px; color:var(--ink3); margin-top:4px; font-weight:500; }
-
-  /* 統計頁面 - 彩色數據卡片 */
-  .stats-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-bottom:24px; }
-  .stat-card { 
-    background: var(--surface); border:1px solid var(--border); 
-    border-radius:var(--radius-lg); padding:20px; position:relative; overflow:hidden;
-  }
-  .stat-card::before {
-    content:''; position:absolute; top:0; right:0; width:80px; height:80px;
-    background: radial-gradient(circle at top right, var(--accent-dim) 0%, transparent 70%);
-  }
-  .stat-card-t { font-size:12px; color:var(--ink3); margin-bottom:8px; font-weight:500; letter-spacing:0.03em; }
-  .stat-card-v { font-family:'DM Mono',monospace; font-size:32px; font-weight:600; color:var(--accent); }
-  .stat-card-s { font-size:12px; color:var(--ink3); margin-top:4px; }
-  
-  .subj-stat-row { 
-    display:flex; align-items:center; gap:14px; padding:16px 18px; 
-    background:var(--surface); border:1px solid var(--border); 
-    border-radius:var(--radius); margin-bottom:10px;
-  }
-  .subj-stat-name { font-size:14px; font-weight:500; min-width:160px; color:var(--ink); }
-  .subj-stat-bar { flex:1; height:8px; background:var(--bg3); border-radius:var(--radius-full); overflow:hidden; }
-  .subj-stat-fill { height:100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius:var(--radius-full); transition:width 0.6s ease-out; }
-  .subj-stat-pct { font-family:'DM Mono',monospace; font-size:13px; min-width:45px; text-align:right; color:var(--accent); font-weight:500; }
-
-  /* 錯題本 */
-  .wrong-list { display:flex; flex-direction:column; gap:12px; }
-  .wrong-item { 
-    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); 
-    padding:18px 20px; cursor:pointer; transition:all 0.2s;
-  }
-  .wrong-item:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-  .wrong-item-meta { display:flex; gap:8px; margin-bottom:8px; align-items:center; flex-wrap:wrap; }
-  .tag { display:inline-block; padding:4px 10px; border-radius:6px; font-size:11px; font-family:'DM Mono',monospace; font-weight:500; }
-  .tag-s { background:var(--bg3); color:var(--ink3); }
-  .tag-w { background:rgba(248,113,113,0.12); color:var(--red); }
-  .wrong-item-q { font-size:14px; line-height:1.7; color:var(--ink2); }
-  
-  .filter-row { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
-  .filter-chip { 
-    padding:6px 14px; border:1px solid var(--border); border-radius:var(--radius-full); 
-    cursor:pointer; font-size:12px; background:var(--surface); color:var(--ink3); 
-    font-family:inherit; font-weight:500; transition:all 0.15s;
-  }
-  .filter-chip:hover { border-color:var(--accent); color:var(--accent); }
-  .filter-chip.active { background:var(--accent); border-color:var(--accent); color:#fff; }
-  
-  .empty-state { text-align:center; padding:60px 20px; color:var(--ink3); }
-  .empty-icon { font-size:48px; margin-bottom:14px; opacity:0.5; }
-
-  /* Toast 提示 */
-  .toast { 
-    position:fixed; bottom:32px; right:24px; 
-    background: var(--surface2); color:var(--ink); 
-    padding:14px 20px; border-radius:var(--radius); font-size:14px; font-weight:500;
-    box-shadow: 0 8px 30px var(--shadow); transform:translateY(80px); opacity:0; 
-    transition:all 0.35s cubic-bezier(0.4,0,0.2,1); z-index:1000; 
-    border-left:3px solid var(--accent);
-  }
-  .toast.show { transform:translateY(0); opacity:1; }
-
-  .curve-range-btn { 
-    padding:5px 12px; border-radius:var(--radius-full); border:1px solid var(--border); 
-    background:var(--surface); color:var(--ink3); cursor:pointer; 
-    font-size:12px; font-family:inherit; font-weight:500; transition:all 0.15s;
-  }
-  .curve-range-btn:hover { border-color:var(--ink3); color:var(--ink2); }
-  .curve-range-btn.active { background:var(--blue); color:#fff; border-color:var(--blue); }
-
-  /* Google Drive 同步區 */
-  .gd-bar { 
-    display:flex; align-items:center; gap:12px; padding:14px 18px; 
-    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); 
-    margin-bottom:20px; flex-wrap:wrap;
-  }
-  .gd-avatar { width:34px; height:34px; border-radius:50%; object-fit:cover; border:2px solid var(--border); }
-  .gd-name { font-size:14px; font-weight:600; color:var(--ink); }
-  .gd-email { font-size:11px; color:var(--ink3); }
-  .gd-status { font-size:11px; padding:4px 10px; border-radius:var(--radius-full); font-family:'DM Mono',monospace; font-weight:500; }
-  .gd-status.synced { background:rgba(74,222,128,0.12); color:var(--green); }
-  .gd-status.pending { background:var(--accent-dim); color:var(--accent); }
-  .gd-status.offline { background:var(--bg3); color:var(--ink3); }
-  .gd-btn { padding:8px 16px; border-radius:var(--radius); font-size:13px; font-family:inherit; cursor:pointer; transition:all 0.2s; border:none; font-weight:600; }
-  .gd-btn-login { background:#4285f4; color:#fff; }
-  .gd-btn-login:hover { filter:brightness(1.1); }
-  .gd-btn-logout { background:var(--surface); color:var(--ink3); border:1px solid var(--border); }
-  .gd-btn-sync { background:var(--green); color:#fff; }
-  .gd-btn-sync:hover { filter:brightness(1.1); }
-  .gd-btn-sync:disabled { background:var(--surface2); color:var(--ink3); cursor:not-allowed; }
-  .gd-section-title { font-size:13px; font-weight:600; color:var(--ink2); margin-bottom:4px; }
-  .gd-section-sub { font-size:11px; color:var(--ink3); margin-bottom:12px; line-height:1.6; }
-  .gd-actions { display:flex; gap:8px; flex-wrap:wrap; }
-  .gd-log { font-family:'DM Mono',monospace; font-size:11px; color:var(--ink3); margin-top:10px; min-height:18px; }
-  .gd-log-line { font-family:'DM Mono',monospace; font-size:11px; color:var(--ink3); line-height:1.8; }
-  .gd-log-line.ok { color:var(--green); }
-  .gd-log-line.err { color:var(--red); }
-  .gd-log-line.warn { color:var(--accent); }
-
-  /* 檔案上傳相關 */
-  .file-info-row { display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:16px; }
-  .file-info-name { font-size:14px; font-weight:600; color:var(--ink); }
-  .file-info-size { font-size:12px; color:var(--ink3); font-family:'DM Mono',monospace; }
-  .file-remove { margin-left:auto; background:none; border:none; cursor:pointer; color:var(--ink3); font-size:18px; line-height:1; transition:color 0.15s; }
+  .file-info-row { display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:16px; }
+  .file-info-name { font-size:14px; font-weight:600; }
+  .file-info-size { font-size:12px; color:var(--ink3); }
+  .file-remove { margin-left:auto; background:none; border:none; cursor:pointer; color:var(--ink3); font-size:18px; line-height:1; }
   .file-remove:hover { color:var(--red); }
+
   .setting-row { display:flex; gap:12px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
-  .setting-row label { font-size:13px; font-weight:500; color:var(--ink2); white-space:nowrap; }
-  .setting-select { padding:10px 14px; border:1px solid var(--border); border-radius:var(--radius); font-family:inherit; font-size:13px; background:var(--surface); color:var(--ink); min-width:180px; }
+  .setting-row label { font-size:13px; font-weight:600; color:var(--ink2); white-space:nowrap; }
+  .setting-select { padding:8px 12px; border:2px solid var(--border); border-radius:var(--radius); font-family:inherit; font-size:13px; background:#fff; color:var(--ink); min-width:180px; }
   .setting-select:focus { outline:none; border-color:var(--accent); }
+  .setting-input { padding:8px 12px; border:2px solid var(--border); border-radius:var(--radius); font-family:inherit; font-size:13px; width:100px; background:#fff; color:var(--ink); }
+  .setting-input:focus { outline:none; border-color:var(--accent); }
 
-  .parse-log { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:16px; max-height:220px; overflow-y:auto; display:none; margin-bottom:16px; }
+  /* PROGRESS & LOG */
+  .parse-progress { display:none; margin-bottom:14px; }
+  .parse-progress.show { display:block; }
+  .progress-labels { display:flex; justify-content:space-between; font-size:12px; color:var(--ink3); margin-bottom:6px; }
+  .progress-track { height:8px; background:var(--bg3); border-radius:4px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--gold)); border-radius:4px; width:0; transition:width 0.4s; }
+
+  .parse-log { display:none; background:#111; border-radius:var(--radius); padding:14px 16px; margin-bottom:14px; max-height:180px; overflow-y:auto; }
   .parse-log.show { display:block; }
-  .log-line { font-family:'DM Mono',monospace; font-size:11px; color:var(--ink3); line-height:1.9; }
-  .log-line.ok { color:var(--green); }
-  .log-line.err { color:var(--red); }
-  .log-line.warn { color:var(--accent); }
+  .log-line { font-family:'DM Mono',monospace; font-size:11px; color:rgba(255,255,255,0.65); line-height:1.9; }
+  .log-line.ok { color:#6bcf8a; }
+  .log-line.err { color:#ff7070; }
+  .log-line.warn { color:var(--gold2); }
 
+  /* PREVIEW */
   .parse-preview { display:none; }
   .parse-preview.show { display:block; }
   .preview-hd { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-  .preview-hd-title { font-size:13px; font-weight:600; color:var(--ink2); }
+  .preview-hd-title { font-size:13px; font-weight:700; color:var(--ink2); letter-spacing:0.05em; }
   .preview-hd-count { font-family:'DM Mono',monospace; font-size:13px; color:var(--accent); font-weight:600; }
-  .preview-items { display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; margin-bottom:14px; }
-  .preview-item { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; }
-  .preview-item-q { font-size:13px; font-weight:600; margin-bottom:5px; line-height:1.55; color:var(--ink); }
+  .preview-items { display:flex; flex-direction:column; gap:8px; max-height:280px; overflow-y:auto; margin-bottom:14px; }
+  .preview-item { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; }
+  .preview-item-q { font-size:13px; font-weight:600; margin-bottom:5px; line-height:1.5; }
   .preview-item-opts { font-size:12px; color:var(--ink3); margin-bottom:4px; }
   .preview-item-meta { font-size:11px; color:var(--ink3); font-family:'DM Mono',monospace; }
   .preview-actions { display:flex; gap:10px; flex-wrap:wrap; }
 
-  .ai-box { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:20px; }
-  .ai-box-head { background:var(--surface2); color:var(--ink); padding:14px 18px; display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; }
-  .ai-badge { background:var(--accent); color:#fff; padding:3px 10px; border-radius:var(--radius-full); font-size:11px; font-weight:700; }
-  .ai-box-body { padding:18px; }
+  /* JSON FORMAT */
+  .json-format { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-top:16px; }
+  .json-format h4 { font-size:13px; font-weight:700; margin-bottom:8px; color:var(--ink2); }
+  .json-format pre { font-family:'DM Mono',monospace; font-size:11px; color:var(--ink2); line-height:1.7; white-space:pre-wrap; }
 
-  /* RWD 手機版 */
+  /* YEAR CHIPS */
+  .year-chips { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  .year-chip { padding:3px 10px; border:1px solid var(--border); border-radius:12px; font-size:11px; font-family:'DM Mono',monospace; cursor:pointer; background:transparent; color:var(--ink3); transition:all 0.15s; }
+  .year-chip:hover { border-color:var(--accent); color:var(--accent); }
+  .year-chip.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .year-chip.all { border-color:var(--ink2); color:var(--ink2); }
+  .year-chip.all.active { background:var(--ink); border-color:var(--ink); color:#fff; }
+  /* QUIZ */
+  .quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; padding-bottom:16px; border-bottom:2px solid var(--border); }
+  .quiz-meta { font-size:13px; color:var(--ink3); }
+  .quiz-prog { flex:1; height:6px; background:var(--bg3); border-radius:3px; margin:0 20px; overflow:hidden; }
+  .quiz-prog-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--gold)); border-radius:3px; transition:width 0.4s; }
+  .quiz-counter { font-family:'DM Mono',monospace; font-size:14px; color:var(--ink2); min-width:60px; text-align:right; }
+  .q-tag { display:inline-block; background:var(--bg2); border:1px solid var(--border); border-radius:2px; padding:3px 10px; font-size:11px; font-family:'DM Mono',monospace; color:var(--ink3); margin-bottom:14px; }
+  .q-text { font-family:'Noto Serif TC',serif; font-size:18px; line-height:1.8; margin-bottom:28px; font-weight:500; }
+  .opts { display:flex; flex-direction:column; gap:10px; margin-bottom:28px; }
+  .opt-btn { display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border:2px solid var(--border); border-radius:var(--radius); cursor:pointer; transition:all 0.18s; background:#fff; text-align:left; font-family:inherit; font-size:15px; line-height:1.6; color:var(--ink); -webkit-tap-highlight-color:transparent; }
+  .opt-btn:hover:not(:disabled) { border-color:var(--accent); background:#fff8f5; }
+  .opt-lbl { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; color:var(--ink3); min-width:20px; margin-top:1px; }
+  .opt-btn.correct { border-color:var(--green); background:#f0f8f2; }
+  .opt-btn.correct .opt-lbl { color:var(--green); }
+  .opt-btn.wrong { border-color:var(--red); background:#fff0f0; }
+  .opt-btn.wrong .opt-lbl { color:var(--red); }
+  .opt-btn:disabled { cursor:default; }
+  .explain-box { background:var(--bg2); border-left:4px solid var(--gold); border-radius:0 var(--radius) var(--radius) 0; padding:16px 20px; margin-bottom:24px; display:none; }
+  .explain-box.show { display:block; }
+  .explain-title { font-size:12px; font-weight:700; color:var(--gold); margin-bottom:8px; letter-spacing:0.1em; }
+  .explain-text { font-size:14px; line-height:1.8; color:var(--ink2); }
+  .quiz-actions { display:flex; gap:12px; justify-content:space-between; align-items:center; }
+  .bk-btn { background:transparent; border:2px solid var(--border); border-radius:var(--radius); padding:8px 14px; cursor:pointer; font-size:18px; transition:all 0.2s; color:var(--ink3); }
+  .bk-btn:hover,.bk-btn.active { border-color:var(--gold); color:var(--gold); }
+  .bk-btn.active { background:#fdf8ec; }
+
+  /* RESULT */
+  .result-ring { width:160px; height:160px; margin:0 auto 24px; position:relative; }
+  .result-ring svg { width:100%; height:100%; transform:rotate(-90deg); }
+  .result-ring-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+  .result-pct { font-family:'DM Mono',monospace; font-size:36px; font-weight:500; color:var(--accent); line-height:1; }
+  .result-lbl { font-size:12px; color:var(--ink3); margin-top:4px; }
+  .result-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:24px 0; }
+  .r-stat { text-align:center; padding:16px; background:var(--bg2); border-radius:var(--radius); border:1px solid var(--border); }
+  .r-stat-n { font-family:'DM Mono',monospace; font-size:28px; font-weight:500; }
+  .r-stat-l { font-size:12px; color:var(--ink3); margin-top:4px; }
+
+  /* STATS */
+  .stats-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-bottom:24px; }
+  .stat-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:20px; box-shadow:0 1px 6px var(--shadow); }
+  .stat-card-t { font-size:12px; color:var(--ink3); margin-bottom:8px; letter-spacing:0.08em; font-weight:600; }
+  .stat-card-v { font-family:'DM Mono',monospace; font-size:32px; font-weight:500; }
+  .stat-card-s { font-size:12px; color:var(--ink3); margin-top:4px; }
+  .subj-stat-row { display:flex; align-items:center; gap:14px; padding:14px 16px; background:#fff; border:1px solid var(--border); border-radius:var(--radius); margin-bottom:10px; }
+  .subj-stat-name { font-size:14px; font-weight:600; min-width:170px; }
+  .subj-stat-bar { flex:1; height:8px; background:var(--bg3); border-radius:4px; overflow:hidden; }
+  .subj-stat-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--gold)); border-radius:4px; transition:width 0.8s; }
+  .subj-stat-pct { font-family:'DM Mono',monospace; font-size:13px; min-width:40px; text-align:right; }
+
+  /* WRONG BOOK */
+  .wrong-list { display:flex; flex-direction:column; gap:12px; }
+  .wrong-item { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:16px 20px; cursor:pointer; transition:all 0.2s; }
+  .wrong-item:hover { border-color:var(--accent); box-shadow:0 2px 10px var(--shadow); }
+  .wrong-item-meta { display:flex; gap:8px; margin-bottom:8px; align-items:center; flex-wrap:wrap; }
+  .tag { display:inline-block; padding:2px 8px; border-radius:2px; font-size:11px; font-family:'DM Mono',monospace; }
+  .tag-s { background:var(--bg2); color:var(--ink3); border:1px solid var(--border); }
+  .tag-w { background:#fff0f0; color:var(--red); border:1px solid #f0c0c0; }
+  .wrong-item-q { font-size:14px; line-height:1.7; }
+  .filter-row { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+  .filter-chip { padding:5px 14px; border:1px solid var(--border); border-radius:20px; cursor:pointer; font-size:12px; background:transparent; color:var(--ink2); font-family:inherit; transition:all 0.15s; }
+  .filter-chip:hover { border-color:var(--accent); color:var(--accent); }
+  .filter-chip.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .empty-state { text-align:center; padding:60px 20px; color:var(--ink3); }
+  .empty-icon { font-size:48px; margin-bottom:12px; }
+
+  .toast { position:fixed; bottom:32px; right:32px; background:var(--ink); color:#fff; padding:12px 20px; border-radius:var(--radius); font-size:13px; box-shadow:0 4px 20px var(--shadow); transform:translateY(80px); opacity:0; transition:all 0.3s; z-index:1000; border-left:3px solid var(--gold); max-width:300px; }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .practice-card { background:#fff; border:2px solid var(--border); border-radius:var(--radius); padding:16px; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; }
+  .practice-card::before { content:''; position:absolute; top:0; left:0; width:4px; height:100%; background:var(--blue); opacity:0; transition:opacity 0.2s; }
+  .practice-card:hover,.practice-card.selected { border-color:var(--blue); background:#f0f4ff; }
+  .practice-card:hover::before,.practice-card.selected::before { opacity:1; }
+  .practice-card:hover { transform:translateY(-2px); box-shadow:0 4px 14px var(--shadow); }
+  .practice-subject-name { font-size:14px; font-weight:700; margin-bottom:3px; }
+  .practice-subject-count { font-size:11px; color:var(--ink3); }
+  .practice-progress { margin-top:8px; height:4px; background:var(--bg3); border-radius:2px; overflow:hidden; }
+  .practice-progress-fill { height:100%; background:var(--blue); border-radius:2px; transition:width 0.5s; }
+
+  .curve-range-btn { padding:4px 12px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--ink3); cursor:pointer; font-size:12px; font-family:inherit; }
+  .curve-range-btn.active { background:#e8f0fb; color:#3266ad; border-color:#3266ad; }
   @media(max-width:768px){
-    .header { padding:0 16px; height:54px; }
-    .header-logo { font-size:16px; }
-    .header-logo::before { width:24px; height:24px; border-radius:6px; }
+    /* 隱藏桌機 header nav，顯示手機底部 nav */
+    .header { padding:0 16px; height:52px; }
     .header-nav { display:none; }
     .mobile-nav { display:block; }
-    .page { padding:20px 16px 100px; }
-    .page-title { font-size:24px; }
+
+    /* 頁面 padding，底部留給手機 nav */
+    .page { padding:16px 16px 90px; }
+
+    /* 頁面標題縮小 */
+    .page-title { font-size:22px; }
+
+    /* 科目 grid 單欄 */
     .subject-grid { grid-template-columns:1fr; gap:12px; }
-    .subject-card { padding:18px; }
+
+    /* 統計 grid 單欄 */
     .stats-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
-    .stat-card { padding:16px; }
-    .stat-card-v { font-size:26px; }
-    .q-text { font-size:16px; margin-bottom:22px; }
+
+    /* 題目字體 */
+    .q-text { font-size:16px; margin-bottom:20px; }
+
+    /* 選項按鈕更大 */
     .opt-btn { padding:14px 16px; font-size:14px; }
+
+    /* 主按鈕全寬 */
+    .start-section { flex-direction:column; }
+    .start-section .btn-primary,
+    .start-section .btn-secondary { width:100%; text-align:center; }
+
+    /* 練習模式 chips */
     .mode-selector { flex-wrap:wrap; }
-    .mode-btn { padding:8px 14px; font-size:12px; }
+
+    /* quiz header 精簡 */
     .quiz-meta { font-size:11px; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .quiz-counter { font-size:12px; min-width:50px; }
+    .quiz-counter { font-size:12px; min-width:48px; }
+
+    /* quiz actions */
     .quiz-actions { gap:8px; }
-    .quiz-actions .btn-secondary { padding:10px 14px; font-size:13px; }
-    .quiz-actions .btn-primary { padding:12px 18px; font-size:13px; }
+    .quiz-actions .btn-secondary { padding:8px 14px; font-size:13px; }
+    .quiz-actions .btn-primary { padding:10px 18px; font-size:13px; }
+
+    /* 結果統計 */
     .result-stats { gap:10px; }
-    .r-stat { padding:14px 8px; }
-    .r-stat-n { font-size:24px; }
-    .upload-tab { font-size:12px; padding:10px 8px; }
-    .upload-zone { padding:36px 20px; }
-    .toast { bottom:90px; right:16px; left:16px; }
+    .r-stat { padding:12px 8px; }
+    .r-stat-n { font-size:22px; }
+
+    /* 上傳 tabs */
+    .upload-tab { font-size:12px; padding:10px 6px; }
+
+    /* year chips */
+    .year-chip { font-size:11px; padding:4px 10px; }
+
+    /* 備份 modal textarea */
+    #exportTextarea { height:160px; }
+
+    /* subj stat row */
     .subj-stat-name { min-width:120px; font-size:13px; }
   }
+  /* GOOGLE DRIVE */
+  .gd-bar { display:flex; align-items:center; gap:10px; padding:12px 16px; background:#fff; border:1px solid var(--border); border-radius:var(--radius); margin-bottom:20px; box-shadow:0 1px 6px var(--shadow); flex-wrap:wrap; }
+  .gd-avatar { width:32px; height:32px; border-radius:50%; object-fit:cover; border:2px solid var(--border); }
+  .gd-name { font-size:13px; font-weight:600; color:var(--ink); }
+  .gd-email { font-size:11px; color:var(--ink3); }
+  .gd-status { font-size:11px; padding:3px 10px; border-radius:10px; font-family:'DM Mono',monospace; }
+  .gd-status.synced { background:#f0f8f2; color:var(--green); border:1px solid #aadcb8; }
+  .gd-status.pending { background:#fff8ec; color:var(--gold); border:1px solid #e0c870; }
+  .gd-status.offline { background:var(--bg2); color:var(--ink3); border:1px solid var(--border); }
+  .gd-btn { padding:7px 16px; border-radius:var(--radius); font-size:13px; font-family:inherit; cursor:pointer; transition:all 0.2s; border:none; font-weight:600; }
+  .gd-btn-login { background:#4285f4; color:#fff; }
+  .gd-btn-login:hover { background:#3367d6; }
+  .gd-btn-logout { background:transparent; color:var(--ink3); border:1px solid var(--border); }
+  .gd-btn-sync { background:var(--green); color:#fff; }
+  .gd-btn-sync:hover { background:#1e5430; }
+  .gd-btn-sync:disabled { background:#aaa; cursor:not-allowed; }
+  .gd-section-title { font-size:13px; font-weight:700; color:var(--ink2); margin-bottom:4px; }
+  .gd-section-sub { font-size:11px; color:var(--ink3); margin-bottom:12px; line-height:1.6; }
+  .gd-actions { display:flex; gap:8px; flex-wrap:wrap; }
+  .gd-log { font-family:'DM Mono',monospace; font-size:11px; color:var(--ink3); margin-top:10px; min-height:18px; }
+
   @media(max-width:380px){
     .page { padding:12px 12px 90px; }
     .q-text { font-size:15px; }
@@ -455,7 +310,7 @@
 <body>
 
 <div class="header">
-  <div class="header-logo">建築師<span>考試刷題</span></div>
+  <div class="header-logo">📐 建築師<span>考試刷題</span></div>
   <div class="header-nav">
     <button class="nav-btn active" onclick="showPage('home')">首頁</button>
     <button class="nav-btn" onclick="showPage('upload')">上傳題庫</button>
@@ -498,13 +353,14 @@
   </div>
   <div class="start-section">
     <button class="btn-primary" onclick="startQuiz()">開始刷題 →</button>
+    <button class="btn-secondary" onclick="showPage('upload')">📂 上傳題庫</button>
   </div>
 
   <div class="divider"></div>
 
   <!-- 練習區 -->
   <div class="section-label">✏️ 練習區</div>
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px">
+  <div style="background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:0 1px 8px var(--shadow)">
     <div style="font-size:13px;color:var(--ink3);margin-bottom:14px;line-height:1.7">
       上傳自訂練習題庫，成績與考古題<strong style="color:var(--ink2)">完全獨立</strong>統計，不互相影響。
     </div>
@@ -514,44 +370,28 @@
       <button class="mode-btn" data-mode="random" onclick="selectPracticeMode(this)">隨機練習</button>
       <button class="mode-btn" data-mode="wrong" onclick="selectPracticeMode(this)">錯題複習</button>
     </div>
-  </div>
-  <div class="start-section">
-    <button class="btn-primary" onclick="startPracticeQuiz()">開始練習 →</button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn-primary" onclick="startPracticeQuiz()">開始練習 →</button>
+      <button class="btn-secondary" onclick="showPage('practiceUpload')">📂 上傳練習題庫</button>
+      <button class="btn-secondary" onclick="showPage('practiceStats')">📊 練習統計</button>
+    </div>
   </div>
 </div>
 
 <!-- UPLOAD -->
 <div id="page-upload" class="page">
   <div class="page-title">上傳題庫</div>
-  <div class="page-subtitle">上傳 JSON 格式題庫</div>
+  <div class="page-subtitle">上傳 JSON 格式題庫匯入考古題</div>
 
-  <!-- 歷屆考古題上傳 -->
-  <div class="section-label">📚 歷屆考古題</div>
   <div class="upload-zone" onclick="document.getElementById('jsonInput').click()"
        ondragover="event.preventDefault()"
        ondrop="handleJsonDrop(event)">
     <div class="upload-icon">📁</div>
     <div class="upload-title">點擊或拖曳上傳 JSON 題庫</div>
-    <div class="upload-hint">上傳後會加入「歷屆考古題」區域</div>
+    <div class="upload-hint">支援 .json 格式</div>
     <button class="btn-primary" style="margin-top:8px">選擇 JSON 檔案</button>
   </div>
   <input type="file" id="jsonInput" accept=".json" style="display:none" onchange="handleJsonUpload(this)">
-
-  <div class="divider"></div>
-
-  <!-- 練習區上傳 -->
-  <div class="section-label">✏️ 練習區題庫</div>
-  <div class="upload-zone" onclick="document.getElementById('practiceJsonInput').click()"
-       ondragover="event.preventDefault()"
-       ondrop="handlePracticeJsonDrop(event)">
-    <div class="upload-icon">📝</div>
-    <div class="upload-title">點擊或拖曳上傳練習題庫</div>
-    <div class="upload-hint">上傳後會加入「練習區」，成績獨立統計</div>
-    <button class="btn-primary" style="margin-top:8px">選擇 JSON 檔案</button>
-  </div>
-  <input type="file" id="practiceJsonInput" accept=".json" style="display:none" onchange="handlePracticeJsonUpload(this)">
-
-  <div class="divider"></div>
 
   <div class="json-format">
     <h4>📋 JSON 格式範例</h4>
@@ -593,7 +433,7 @@
   <div class="quiz-actions">
     <button class="bk-btn" id="bkBtn" onclick="toggleBookmark()">🔖</button>
     <div style="display:flex;gap:10px">
-      <button class="btn-secondary" onclick="endQuiz()">結束練習</button>
+      <button class="btn-secondary" onclick="showPage('home')">結束練習</button>
       <button class="btn-primary" id="nextBtn" onclick="nextQ()" style="display:none">下一題 →</button>
     </div>
   </div>
@@ -868,33 +708,6 @@ function handleJsonDrop(e) {
   r.readAsText(f);
 }
 
-// 練習區上傳
-function handlePracticeJsonUpload(input) {
-  const f = input.files[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = e=>{try{importPracticeQs(JSON.parse(e.target.result));}catch{toast('JSON 格式錯誤');}};
-  r.readAsText(f);
-}
-function handlePracticeJsonDrop(e) {
-  e.preventDefault();
-  const f = e.dataTransfer.files[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = ev=>{try{importPracticeQs(JSON.parse(ev.target.result));}catch{toast('JSON 格式錯誤');}};
-  r.readAsText(f);
-}
-
-function importPracticeQs(data) {
-  if(!Array.isArray(data)){toast('格式錯誤：需要陣列');return;}
-  const valid = data.filter(q=>q.question&&q.options&&q.answer!==undefined);
-  valid.forEach((q,i)=>{if(!q.id) q.id='pq_'+Date.now()+'_'+i;});
-  const existing = new Set(P.questions.map(q=>q.id));
-  const newOnes = valid.filter(q=>!existing.has(q.id));
-  P.questions = [...P.questions,...newOnes];
-  localStorage.setItem('practiceQuestions',JSON.stringify(P.questions));
-  toast(`✓ 練習區成功匯入 ${newOnes.length} 題！`);
-  renderSummary(); renderHome();
-}
-
 function importQs(data) {
   if(!Array.isArray(data)){toast('格式錯誤：需要陣列');return;}
   const valid = data.filter(q=>q.question&&q.options&&q.answer!==undefined);
@@ -910,55 +723,26 @@ function importQs(data) {
 function renderSummary() {
   const el = document.getElementById('loadedSummary');
   if(!el) return;
-  
-  let html = '';
-  
-  // 歷屆考古題
-  html += '<div style="font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:10px">📚 歷屆考古題</div>';
   if(!S.questions.length){
-    html += '<div style="padding:16px;text-align:center;color:var(--ink3);font-size:13px;background:var(--surface);border-radius:var(--radius);margin-bottom:16px">尚未上傳</div>';
-  } else {
-    const subjects = [...new Set(S.questions.map(q=>q.subject))];
-    html += subjects.map(s=>{
-      const qs = S.questions.filter(q=>q.subject===s);
-      const icon = SUBJECTS.find(x=>x.name===s)?.icon||'📋';
-      const chapters = [...new Set(qs.map(q=>q.chapter).filter(Boolean))];
-      return `<div class="subj-stat-row" style="margin-bottom:8px">
-        <div class="subj-stat-name">${icon} ${s}</div>
-        <div style="flex:1;font-size:12px;color:var(--ink3)">${chapters.slice(0,2).join('、')}${chapters.length>2?'…':''}</div>
-        <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);font-weight:600;min-width:44px;text-align:right">${qs.length} 題</div>
-        <button class="btn-secondary" style="padding:4px 12px;font-size:12px;margin-left:8px" onclick="clearSubj('${s}')">清除</button>
-      </div>`;
-    }).join('');
-    html += `<div style="margin-top:8px;padding:8px 0;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-size:12px;color:var(--ink3)">共 <strong>${S.questions.length}</strong> 題</span>
-      <button class="btn-secondary" style="padding:4px 12px;font-size:12px;color:var(--red);border-color:var(--red)" onclick="clearAll()">清除全部</button>
-    </div>`;
+    el.innerHTML='<div class="empty-state" style="padding:24px"><div class="empty-icon">📭</div><div>尚未上傳任何題庫</div></div>';
+    return;
   }
-  
-  // 練習區題庫
-  html += '<div style="font-size:13px;font-weight:600;color:var(--ink2);margin:20px 0 10px">✏️ 練習區題庫</div>';
-  if(!P.questions.length){
-    html += '<div style="padding:16px;text-align:center;color:var(--ink3);font-size:13px;background:var(--surface);border-radius:var(--radius)">尚未上傳</div>';
-  } else {
-    const pSubjects = [...new Set(P.questions.map(q=>q.subject))];
-    html += pSubjects.map(s=>{
-      const qs = P.questions.filter(q=>q.subject===s);
-      const chapters = [...new Set(qs.map(q=>q.chapter).filter(Boolean))];
-      return `<div class="subj-stat-row" style="margin-bottom:8px">
-        <div class="subj-stat-name">📝 ${s}</div>
-        <div style="flex:1;font-size:12px;color:var(--ink3)">${chapters.slice(0,2).join('、')}${chapters.length>2?'…':''}</div>
-        <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--blue);font-weight:600;min-width:44px;text-align:right">${qs.length} 題</div>
-        <button class="btn-secondary" style="padding:4px 12px;font-size:12px;margin-left:8px" onclick="clearPracticeSubj('${s}')">清除</button>
-      </div>`;
-    }).join('');
-    html += `<div style="margin-top:8px;padding:8px 0;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-size:12px;color:var(--ink3)">共 <strong>${P.questions.length}</strong> 題</span>
-      <button class="btn-secondary" style="padding:4px 12px;font-size:12px;color:var(--red);border-color:var(--red)" onclick="clearAllPractice()">清除全部</button>
+  const subjects = [...new Set(S.questions.map(q=>q.subject))];
+  el.innerHTML = subjects.map(s=>{
+    const qs = S.questions.filter(q=>q.subject===s);
+    const icon = SUBJECTS.find(x=>x.name===s)?.icon||'📋';
+    const chapters = [...new Set(qs.map(q=>q.chapter).filter(Boolean))];
+    return `<div class="subj-stat-row" style="margin-bottom:8px">
+      <div class="subj-stat-name">${icon} ${s}</div>
+      <div style="flex:1;font-size:12px;color:var(--ink3)">${chapters.slice(0,3).join('、')}${chapters.length>3?'…':''}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);font-weight:600;min-width:44px;text-align:right">${qs.length} 題</div>
+      <button class="btn-secondary" style="padding:4px 12px;font-size:12px;margin-left:8px" onclick="clearSubj('${s}')">清除</button>
     </div>`;
-  }
-  
-  el.innerHTML = html;
+  }).join('') +
+  `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+    <span style="font-size:13px;color:var(--ink3)">共 <strong>${S.questions.length}</strong> 題</span>
+    <button class="btn-secondary" style="color:var(--red);border-color:var(--red)" onclick="clearAll()">清除全部</button>
+  </div>`;
 }
 
 function clearSubj(name) {
@@ -968,23 +752,10 @@ function clearSubj(name) {
 }
 
 function clearAll() {
-  if(!confirm('確定清除所有考古題題庫？')) return;
+  if(!confirm('確定清除所有題庫？')) return;
   S.questions=[];
   localStorage.setItem('questions','[]');
-  renderSummary(); renderHome(); toast('已清除所有考古題題庫');
-}
-
-function clearPracticeSubj(name) {
-  P.questions = P.questions.filter(q=>q.subject!==name);
-  localStorage.setItem('practiceQuestions',JSON.stringify(P.questions));
-  renderSummary(); renderHome(); toast(`已清除練習區「${name}」`);
-}
-
-function clearAllPractice() {
-  if(!confirm('確定清除所有練習區題庫？')) return;
-  P.questions=[];
-  localStorage.setItem('practiceQuestions','[]');
-  renderSummary(); renderHome(); toast('已清除所有練習區題庫');
+  renderSummary(); renderHome(); toast('已清除所有題庫');
 }
 
 // ===== HOME RENDER =====
@@ -1002,12 +773,6 @@ function renderSubjectGrid() {
     g.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--ink3);font-size:13px">尚未上傳題庫<br><small>點下方「上傳題庫」新增</small></div>';
     return;
   }
-  
-  // 檢查是否有未完成的進度
-  const resume = getResume();
-  const hasResume = resume && resume.queueIds && resume.queueIds.length && resume.idx > 0 && resume.idx < resume.queueIds.length;
-  const resumeSubjects = hasResume ? (resume.selSubjects || []) : [];
-  
   subjects.forEach(s => {
     const qs = S.questions.filter(q=>q.subject===s);
     const done = S.history.filter(h=>qs.some(q=>q.id===h.qid)).length;
@@ -1016,14 +781,20 @@ function renderSubjectGrid() {
     const icon = SUBJECTS.find(x=>x.name===s)?.icon||'📋';
     const years = [...new Set(qs.map(q=>q.year).filter(Boolean))].sort();
     const selYears = S.selYears[s]||[];
-    
-    // 判斷此科目是否有未完成進度
-    const subjHasResume = hasResume && (resumeSubjects.length === 0 || resumeSubjects.includes(s));
+
+    // 檢查此科目是否有未完成斷點
+    const allResumes = getAllResumes();
+    const hasResume = Object.values(allResumes).some(r =>
+      r.idx > 0 &&
+      ((r.selSubjects||[]).includes(s) || !(r.selSubjects||[]).length)
+    );
 
     const d = document.createElement('div');
-    d.className = 'subject-card'+(sel?' selected':'')+(subjHasResume?' has-resume':'');
+    d.className = 'subject-card'+(sel?' selected':'');
+    d.style.position = 'relative';
     d.onclick = () => toggleSubj(s, d);
-    d.innerHTML = `<span class="resume-badge">未完成</span>
+    d.innerHTML = `
+      ${hasResume ? '<div style="position:absolute;top:8px;right:8px;background:#dd6b20;color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;line-height:1.4">未完成</div>' : ''}
       <div class="subject-card-icon">${icon}</div>
       <div class="subject-card-name">${s}</div>
       <div class="subject-card-count">${qs.length} 題</div>
@@ -1057,21 +828,48 @@ function selectMode(btn) {
   S.mode = btn.dataset.mode;
 }
 
-// ===== RESUME =====
+// ===== RESUME（多組斷點，以 key 區分）=====
+function resumeKey(selSubjects, selYears, mode) {
+  const subj = (selSubjects||[]).slice().sort().join(',') || '__all__';
+  const normalizeYears = obj => {
+    const out = {};
+    Object.entries(obj||{}).forEach(([k,v])=>{ if(v&&v.length) out[k]=v.slice().sort(); });
+    return JSON.stringify(out);
+  };
+  return subj + '|' + normalizeYears(selYears) + '|' + (mode||'normal');
+}
+
+function getAllResumes() {
+  try { return JSON.parse(localStorage.getItem('resumeMap')||'{}'); } catch { return {}; }
+}
+
 function saveResume() {
-  const resume = {
+  if(!S.queue.length || S.idx <= 0) return; // idx=0 不值得存
+  const key = resumeKey(S.selSubjects, S.selYears, S.mode);
+  const map = getAllResumes();
+  map[key] = {
     queueIds:    S.queue.map(q=>q.id),
     idx:         S.idx,
     session:     S.session,
     selSubjects: [...S.selSubjects],
     selYears:    JSON.parse(JSON.stringify(S.selYears||{})),
     mode:        S.mode,
+    savedAt:     Date.now(),
   };
-  localStorage.setItem('resume', JSON.stringify(resume));
+  localStorage.setItem('resumeMap', JSON.stringify(map));
 }
 
-function getResume() {
-  try { return JSON.parse(localStorage.getItem('resume')||'null'); } catch { return null; }
+function getResume(selSubjects, selYears, mode) {
+  const key = resumeKey(selSubjects, selYears, mode);
+  const map = getAllResumes();
+  return map[key] || null;
+}
+
+function clearResume(selSubjects, selYears, mode) {
+  const key = resumeKey(selSubjects, selYears, mode);
+  const map = getAllResumes();
+  delete map[key];
+  localStorage.setItem('resumeMap', JSON.stringify(map));
 }
 
 // ===== COPY EXPORT =====
@@ -1115,50 +913,24 @@ function startQuiz() {
   });
   if(!pool.length){toast('沒有題目，請先上傳題庫或選擇科目');return;}
 
-  // 檢查斷點 → 詢問是否接續
-  const resume = getResume();
-  if(resume && resume.queueIds && resume.queueIds.length && resume.idx > 0 && resume.idx < resume.queueIds.length) {
-    // 比對科目：兩邊都空 = 相符；或排序後字串相同
-    const rSubj = (resume.selSubjects||[]).slice().sort();
-    const cSubj = (S.selSubjects||[]).slice().sort();
-    const subjMatch = JSON.stringify(rSubj) === JSON.stringify(cSubj);
-
-    // 比對年份：先標準化（移除空陣列的 key）
-    const normalizeYears = obj => {
-      const out = {};
-      Object.entries(obj||{}).forEach(([k,v])=>{ if(v&&v.length) out[k]=v.slice().sort(); });
-      return JSON.stringify(out);
-    };
-    const yearMatch = normalizeYears(resume.selYears) === normalizeYears(S.selYears);
-
-    // 比對模式
-    const modeMatch = (resume.mode||'normal') === S.mode;
-
-    if(subjMatch && yearMatch && modeMatch) {
-      const qMap = Object.fromEntries(S.questions.map(q=>[q.id,q]));
-      const queue = resume.queueIds.map(id=>qMap[id]).filter(Boolean);
-      if(queue.length && resume.idx < queue.length) {
-        // 彈窗詢問
-        const remaining = queue.length - resume.idx;
-        if(confirm(`發現上次未完成的進度\n（第 ${resume.idx+1}/${queue.length} 題，剩餘 ${remaining} 題）\n\n是否繼續？\n\n點「確定」繼續上次進度\n點「取消」重新開始`)) {
-          S.queue = queue;
-          S.idx = resume.idx;
-          S.session = resume.session||{total:0,correct:0};
-          toast(`▶ 接續上次進度（第 ${resume.idx+1} 題）`);
-          showPage('quiz'); renderQ();
-          return;
-        } else {
-          // 清除舊進度，重新開始
-          localStorage.removeItem('resume');
-        }
-      }
+  // 檢查此組合的斷點 → 自動接續
+  const resume = getResume(S.selSubjects, S.selYears, S.mode);
+  if(resume && resume.queueIds && resume.queueIds.length && resume.idx > 0) {
+    const qMap = Object.fromEntries(S.questions.map(q=>[q.id,q]));
+    const queue = resume.queueIds.map(id=>qMap[id]).filter(Boolean);
+    if(queue.length && resume.idx < queue.length) {
+      S.queue = queue;
+      S.idx = resume.idx;
+      S.session = resume.session||{total:0,correct:0};
+      toast(`▶ 接續上次進度（第 ${resume.idx+1} / ${queue.length} 題）`);
+      showPage('quiz'); renderQ();
+      return;
     }
   }
 
   // 全新開始
   if(S.mode==='random') pool.sort(()=>Math.random()-0.5);
   S.queue=pool; S.idx=0; S.session={total:0,correct:0};
-  saveResume(); // 存初始狀態
   showPage('quiz'); renderQ();
 }
 
@@ -1209,31 +981,14 @@ function answer(chosen,q) {
   if(P.isActive) { saveP(); savePResume(); }
   else { save(); saveResume(); gdAutoSync(); }
   document.getElementById('nextBtn').style.display='inline-block';
+  toast(ok?'✓ 答對了！':'✗ 答錯了');
 }
 
 function nextQ() {
   const ctx = P.isActive ? P : S;
   ctx.idx++;
   if(ctx.idx>=ctx.queue.length) showResult();
-  else {
-    renderQ();
-    // 保存進度以支持續作
-    if(P.isActive) savePResume();
-    else saveResume();
-  }
-}
-
-function endQuiz() {
-  // 保存當前進度後返回主頁
-  if(P.isActive) {
-    savePResume();
-    P.isActive = false;
-  } else {
-    saveResume();
-  }
-  showPage('home');
-  renderHome();
-  toast('進度已保存，可稍後繼續');
+  else renderQ();
 }
 
 function toggleBookmark() {
@@ -1249,7 +1004,7 @@ function toggleBookmark() {
 function showResult() {
   const ctx = P.isActive ? P : S;
   if(P.isActive) { P.isActive = false; clearPracticeResume(); }
-  else { localStorage.removeItem('resume'); }
+  else { clearResume(S.selSubjects, S.selYears, S.mode); }
   const {total,correct}=ctx.session;
   const pct=total?Math.round(correct/total*100):0;
   document.getElementById('scorePct').textContent=pct+'%';
@@ -2083,35 +1838,12 @@ function renderPracticeSubjectGrid() {
 
   const subjects = [...new Set(P.questions.map(q => q.subject))];
   const selCount = P.selSubjects.length + P.selChapters.length;
-  
-  // 檢查是否有未完成的練習進度
-  const resume = getPracticeResume();
-  const hasResume = resume && resume.queueIds && resume.queueIds.length && resume.idx > 0 && resume.idx < resume.queueIds.length;
-  const resumeSubjects = hasResume ? (resume.selSubjects || []) : [];
-  const resumeChapters = hasResume ? (resume.selChapters || []) : [];
-  
-  // 找出有未完成章節的科目（用於自動展開）
-  const resumeChapterSubjects = resumeChapters.map(c => c.split('|')[0]);
-  
-  // 判斷 resume 是「全部題目」還是「特定選擇」
-  const isResumeAllQuestions = hasResume && resumeSubjects.length === 0 && resumeChapters.length === 0;
 
   // 說明列
   const hint = document.createElement('div');
   hint.style.cssText = 'grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:12px;color:var(--ink3)';
-  let resumeHint = '';
-  if(hasResume) {
-    if(isResumeAllQuestions) {
-      resumeHint = ' · <span style="color:var(--gold)">📌 全部題目有未完成進度</span>';
-    } else if(resumeChapters.length > 0) {
-      const chName = resumeChapters[0].split('|')[1];
-      resumeHint = ` · <span style="color:var(--gold)">📌 ${chName} 有未完成進度</span>`;
-    } else if(resumeSubjects.length > 0) {
-      resumeHint = ` · <span style="color:var(--gold)">📌 ${resumeSubjects[0]} 有未完成進度</span>`;
-    }
-  }
-  hint.innerHTML = `<span>${selCount > 0 ? `已選 ${selCount} 個項目` : '未選擇：將練習全部題目'}${resumeHint}</span>
-    <button onclick="clearPracticeSelection()" style="background:none;border:none;color:#4a90d9;font-size:12px;cursor:pointer;padding:0">清除選擇</button>`;
+  hint.innerHTML = `<span>${selCount > 0 ? `已選 ${selCount} 個項目` : '未選擇：將練習全部題目'}</span>
+    <button onclick="clearPracticeSelection()" style="background:none;border:none;color:var(--blue);font-size:12px;cursor:pointer;padding:0">清除選擇</button>`;
   g.appendChild(hint);
 
   subjects.forEach(s => {
@@ -2119,19 +1851,7 @@ function renderPracticeSubjectGrid() {
     const done = P.history.filter(h => subjQs.some(q => q.id === h.qid)).length;
     const pct = subjQs.length ? Math.round(done / subjQs.length * 100) : 0;
     const subjSel = P.selSubjects.includes(s);
-    
-    // 如果有未完成的章節屬於此科目，自動展開
-    const hasResumeChapterInSubj = resumeChapterSubjects.includes(s);
-    const expanded = P.expandedSubj === s || hasResumeChapterInSubj;
-    
-    // 判斷此科目是否有未完成進度
-    // 情況1: resume 選擇了此科目（resumeSubjects 包含此科目），且沒有選擇章節
-    // 情況2: resume 沒有選擇任何科目或章節（全部題目），此時在第一個科目上顯示
-    const isAllQuestions = resumeSubjects.length === 0 && resumeChapters.length === 0;
-    const isFirstSubject = subjects.indexOf(s) === 0;
-    const subjHasResume = hasResume && resumeChapters.length === 0 && (
-      resumeSubjects.includes(s) || (isAllQuestions && isFirstSubject)
-    );
+    const expanded = P.expandedSubj === s;
 
     // 章節列表（含自訂章節）
     const chapters = [...new Set(subjQs.map(q => getPracticeChapter(q)))];
@@ -2148,10 +1868,8 @@ function renderPracticeSubjectGrid() {
           const chPct = chQs.length ? Math.round(chDone / chQs.length * 100) : 0;
           const chSel = P.selChapters.includes(s + '|' + ch);
           const isCustom = ch in P.customChapters;
-          const chHasResume = hasResume && resumeChapters.includes(s + '|' + ch);
-          return `<div class="practice-card${chSel ? ' selected' : ''}${chHasResume ? ' has-resume' : ''}" style="padding:10px 12px;position:relative"
+          return `<div class="practice-card${chSel ? ' selected' : ''}" style="padding:10px 12px"
             onclick="togglePracticeChapter('${s.replace(/'/g,"\'")}','${ch.replace(/'/g,"\'")}',this)">
-            ${chHasResume ? '<span class="resume-badge">未完成</span>' : ''}
             <div style="font-size:12px;font-weight:600;color:var(--ink1)">${isCustom ? '🏷️ ' : ''}${ch}</div>
             <div style="font-size:11px;color:var(--ink3);margin-top:2px">${chQs.length} 題 · ${chPct}%</div>
             <div class="practice-progress" style="margin-top:6px">
@@ -2162,9 +1880,8 @@ function renderPracticeSubjectGrid() {
       </div>`;
     }
 
-    d.innerHTML = `<div class="practice-card${subjSel ? ' selected' : ''}${subjHasResume ? ' has-resume' : ''}" style="display:flex;align-items:center;gap:10px;position:relative"
+    d.innerHTML = `<div class="practice-card${subjSel ? ' selected' : ''}" style="display:flex;align-items:center;gap:10px"
       onclick="togglePracticeSubj('${s.replace(/'/g,"\'")}',this)">
-      ${subjHasResume ? '<span class="resume-badge">未完成</span>' : ''}
       <div style="flex:1">
         <div class="practice-subject-name">${s}</div>
         <div class="practice-subject-count">${subjQs.length} 題 · 已練習 ${done} 題</div>
@@ -2231,9 +1948,9 @@ function startPracticeQuiz() {
   }
   if(!pool.length) { toast('沒有符合條件的練習題目'); return; }
 
-  // 檢查斷點：選擇條件一致時詢問是否接續
+  // 檢查斷點：選擇條件一致時自動接續
   const resume = getPracticeResume();
-  if(resume && resume.queueIds && resume.queueIds.length && resume.idx > 0 && resume.idx < resume.queueIds.length && resume.mode !== 'wrong') {
+  if(resume && resume.queueIds && resume.queueIds.length && resume.mode !== 'wrong') {
     const selSubjMatch = JSON.stringify([...resume.selSubjects].sort()) === JSON.stringify([...P.selSubjects].sort());
     const selChapMatch = JSON.stringify([...resume.selChapters].sort()) === JSON.stringify([...P.selChapters].sort());
     const modeMatch    = resume.mode === P.mode;
@@ -2241,19 +1958,11 @@ function startPracticeQuiz() {
       const qMap = Object.fromEntries(P.questions.map(q=>[q.id,q]));
       const queue = resume.queueIds.map(id=>qMap[id]).filter(Boolean);
       if(queue.length && resume.idx < queue.length) {
-        // 彈窗詢問
-        const remaining = queue.length - resume.idx;
-        if(confirm(`發現上次未完成的練習進度\n（第 ${resume.idx+1}/${queue.length} 題，剩餘 ${remaining} 題）\n\n是否繼續？\n\n點「確定」繼續上次進度\n點「取消」重新開始`)) {
-          P.queue = queue; P.idx = resume.idx;
-          P.session = resume.session||{total:0,correct:0};
-          P.answered = false; P.isActive = true;
-          toast(`▶ 接續上次進度（第 ${resume.idx+1} 題）`);
-          showPage('quiz'); renderQ();
-          return;
-        } else {
-          // 清除舊進度，重新開始
-          clearPracticeResume();
-        }
+        P.queue = queue; P.idx = resume.idx;
+        P.session = resume.session||{total:0,correct:0};
+        P.answered = false; P.isActive = true;
+        showPage('quiz'); renderQ();
+        return;
       }
     }
   }
@@ -2481,6 +2190,7 @@ function setCurveRange(r) {
   });
   renderCurve();
 }
+</script>
 
 if('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
