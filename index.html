@@ -2459,16 +2459,43 @@ function getTrend(history) {
 
 function renderCurve() {
   const allH = [...S.history, ...P.history];
-  const examD = getCurveData(S.history, _curveRange);
-  const pracD = getCurveData(P.history, _curveRange);
   const hasData = allH.length > 0;
+
+  // 產生統一的日期標籤
+  const now = Date.now();
+  const dayMs = 86400000;
+  const labels = [];
+  const days = [];
+  for(let i=_curveRange-1; i>=0; i--) {
+    const d = new Date(now - i*dayMs);
+    labels.push((d.getMonth()+1)+'/'+(d.getDate()));
+    days.push({
+      start: new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(),
+      end:   new Date(d.getFullYear(), d.getMonth(), d.getDate()+1).getTime(),
+    });
+  }
+
+  // 計算每天的正確率
+  function getDayData(history) {
+    return days.map(day => {
+      const dayH = history.filter(h => h.time >= day.start && h.time < day.end);
+      if(!dayH.length) return null;
+      const map = new Map();
+      dayH.forEach(h => map.set(h.qid, h));
+      const deduped = [...map.values()];
+      return Math.round(deduped.filter(h=>h.correct).length / deduped.length * 100);
+    });
+  }
+
+  const examData = getDayData(S.history);
+  const pracData = getDayData(P.history);
 
   // 摘要卡片
   const recentPct = getRecentPct(allH, 7);
   const trend     = getTrend(allH);
   const streak    = getStreakDays(allH);
   const trendStr  = trend === null ? '—' : (trend >= 0 ? '+' : '') + trend + '%';
-  const trendColor= trend === null ? 'var(--ink3)' : trend >= 0 ? '#38a169' : '#e53e3e';
+  const trendColor= trend === null ? 'var(--ink3)' : trend >= 0 ? '#4ade80' : '#f87171';
   document.getElementById('curveCards').innerHTML = `
     <div style="background:var(--bg2);border-radius:var(--radius);padding:10px 14px">
       <div style="font-size:11px;color:var(--ink3);margin-bottom:4px">近 7 天正確率</div>
@@ -2498,18 +2525,18 @@ function renderCurve() {
   _curveChart = new Chart(canvas, {
     type: 'line',
     data: {
-      labels: examD.labels,
+      labels: labels,
       datasets: [
         {
-          label: '考古題', data: examD.data,
+          label: '考古題', data: examData,
           borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,0.1)',
-          borderWidth: 2, pointRadius: 3, pointHoverRadius: 5,
+          borderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
           tension: 0.35, fill: true, spanGaps: false
         },
         {
-          label: '練習區', data: pracD.data,
+          label: '練習區', data: pracData,
           borderColor: '#4ade80', backgroundColor: 'rgba(74,222,128,0.1)',
-          borderWidth: 2, pointRadius: 3, pointHoverRadius: 5,
+          borderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
           tension: 0.35, fill: true, spanGaps: false
         }
       ]
